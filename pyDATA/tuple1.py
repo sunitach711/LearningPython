@@ -1,0 +1,13 @@
+t=(20,30,40,50)
+m=min(t)
+print(m)#input=20
+m=max(t)
+print(m)#input=50
+c=t.count(20)
+print(c)#input=1
+i=t.index(40)
+print(i)#input=2
+s=sum(t)
+print(s)#input=140
+s=sum(t,10)
+print(s)#input=150

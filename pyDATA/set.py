@@ -1,0 +1,23 @@
+l={10,20,30}
+s=set(l)
+print(s)
+s={10,20,30}
+s.add(40)
+print(s)
+s={10,20,30}
+print(s.pop())
+print(s)
+#random delete
+s={10,20,30}
+s.remove(20)
+print(s)
+s={10,20,30}
+s.discard(30)
+print(s)
+s={10,20,30}
+s.clear()
+print(s)
+s={10,20,30}
+l=[30,40,60]
+s.update(l)
+print(s)

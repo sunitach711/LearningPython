@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Style Resume Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #131313;
+            color: #e5e5e5;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .chatgpt-container {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .chatgpt-header {
+            background: #202123;
+            color: #fff;
+            padding: 24px 0;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #23272f;
+        }
+        .chatgpt-messages {
+            flex: 1;
+            padding: 32px 24px 24px 24px;
+            overflow-y: auto;
+            background: #131313;
+        }
+        .chatgpt-message {
+            display: flex;
+            margin-bottom: 24px;
+        }
+        .chatgpt-message.user {
+            justify-content: flex-end;
+        }
+        .chatgpt-message.assistant {
+            justify-content: flex-start;
+        }
+        .chatgpt-bubble {
+            max-width: 70%;
+            padding: 16px 20px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .chatgpt-bubble.user {
+            background: linear-gradient(135deg, #434343 0%, #262626 100%);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .chatgpt-bubble.assistant {
+            background: #23272f;
+            color: #e5e5e5;
+            border-bottom-left-radius: 4px;
+        }
+        .chatgpt-input {
+            display: flex;
+            background: #202123;
+            border-top: 1px solid #23272f;
+            padding: 16px;
+        }
+        .chatgpt-input input {
+            flex: 1;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            background: #131313;
+            color: #e5e5e5;
+            outline: none;
+        }
+        .chatgpt-input button {
+            margin-left: 12px;
+            padding: 0 28px;
+            background: #10a37f;
+            color: #fff;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .chatgpt-input button:hover {
+            background: #0d8b6c;
+        }
+        @media (max-width: 800px) {
+            .chatgpt-container {
+                max-width: 100vw;
+            }
+        }
+        @media (max-width: 600px) {
+            .chatgpt-header {
+                font-size: 1.2rem;
+                padding: 16px 0;
+            }
+            .chatgpt-messages {
+                padding: 16px 6px 12px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chatgpt-container">
+        <div class="chatgpt-header">ChatGPT Style Resume Assistant</div>
+        <div class="chatgpt-messages" id="chatgpt-messages">
+            <div class="chatgpt-message assistant">
+                <div class="chatgpt-bubble assistant">👋 Hi! I can help you create a professional resume. Tell me about the job you want or your experience!</div>
+            </div>
+        </div>
+        <form class="chatgpt-input" id="chatgpt-form" autocomplete="off">
+            <input type="text" id="chatgpt-user-input" placeholder="Type your message..." required autofocus />
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    <script>
+        const chatForm = document.getElementById('chatgpt-form');
+        const userInput = document.getElementById('chatgpt-user-input');
+        const chatMessages = document.getElementById('chatgpt-messages');
+
+        function appendMessage(role, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chatgpt-message ${role}`;
+            const bubble = document.createElement('div');
+            bubble.className = `chatgpt-bubble ${role}`;
+            bubble.textContent = text;
+            msgDiv.appendChild(bubble);
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+            appendMessage('user', message);
+            userInput.value = '';
+            appendMessage('assistant', '...'); // Loading indicator
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                const data = await res.json();
+                // Remove loading
+                chatMessages.removeChild(chatMessages.lastChild);
+                if (data.response) {
+                    appendMessage('assistant', data.response);
+                } else {
+                    appendMessage('assistant', 'Sorry, something went wrong.');
+                }
+            } catch (err) {
+                chatMessages.removeChild(chatMessages.lastChild);
+                appendMessage('assistant', 'Error connecting to server.');
+            }
+        });
+    </script>
+</body>
+</html>
